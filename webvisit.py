@@ -7,12 +7,19 @@ from fake_useragent import UserAgent
 import concurrent.futures
 from logging.handlers import RotatingFileHandler
 
-# Configure logging with rotation
-logging.basicConfig(
-    handlers=[RotatingFileHandler('web_visits.log', maxBytes=5 * 1024 * 1024, backupCount=3)],
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+# Configure logging with rotation and console output
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# File handler
+file_handler = RotatingFileHandler('web_visits.log', maxBytes=5 * 1024 * 1024, backupCount=3)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger.addHandler(file_handler)
+
+# Console handler
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger.addHandler(console_handler)
 
 
 class WebsiteVisitor:
@@ -47,6 +54,7 @@ class WebsiteVisitor:
 
     def single_visit(self):
         """Make a single visit to the website."""
+        logging.info(f"Attempting to visit {self.url}")
         try:
             response = self.session.get(self.url, headers=self._get_headers(), timeout=10)
             if response.status_code == 200:
@@ -105,10 +113,10 @@ class WebsiteVisitor:
 if __name__ == "__main__":
     visitor = WebsiteVisitor(
         url="https://www.meetpay.africa",
-        visit_interval=(45, 180),  # Random interval between 45 and 180 seconds
+        visit_interval=(10, 15),  # Random interval between 10 and 15 seconds
         max_concurrent=3  # Maximum concurrent visits
     )
     
-    # Run the visitor with a limit of 500 visits
+    # Run the visitor with a limit of 5 visits
     total_visits, total_errors = visitor.run_visitor(max_visits=500)
     print(f"Completed {total_visits} visits with {total_errors} errors.")
