@@ -114,7 +114,7 @@ if __name__ == "__main__":
     visitor = WebsiteVisitor(
         url="https://www.meetpay.africa",
         visit_interval=(10, 15),  # Random interval between 10 and 15 seconds
-        max_concurrent=3  # Maximum concurrent visits
+        max_concurrent=10  # Maximum concurrent visits
     )
     
     # Run the visitor with a limit of 5 visits
